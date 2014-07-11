@@ -19,6 +19,10 @@ if ~exist('vendor/tet-cpp-client-master', 'dir')
     unzip(target, 'vendor');
 end
 
+cd 'vendor/tet-cpp-client-master';
+system 'patch -p1 < ../../tribe.patch';
+cd '../..';
+
 % Building C++ client
 gaze_lib = 'vendor/tet-cpp-build/libGazeApiLib.a';
 build_dir = 'vendor/tet-cpp-build';

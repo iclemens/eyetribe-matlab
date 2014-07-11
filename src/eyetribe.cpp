@@ -56,7 +56,7 @@ void connect(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     try {        
         mexPrintf("Establishing connection with %s:%d.\n", server, port);
         gaze_api = new gtl::GazeApi();
-        gaze_api->connect(false, port);     // FIXME: Need to change c++ client
+        gaze_api->connect(false, server, port);
         mexPrintf("Connection established.\n");
     } catch(...) {
         mexWarnMsgIdAndTxt("EyeTribe:connect", "Connection error...");
