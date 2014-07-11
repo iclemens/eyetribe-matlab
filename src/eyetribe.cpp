@@ -13,7 +13,7 @@ gtl::GazeApi *gaze_api;
 
 /**
  * Connects to the eye tribe system. Should be invoked using:
- * eyetribe('connect', SERVER, PORT)
+ * eyetribe('connect', SERVER, PORT);
  *
  * Due to a bug SERVER is currently ignored.
  */
@@ -72,9 +72,8 @@ void connect(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 /**
  * Disconnects from the eye tribe system. Should be invoked as:
- * eyetribe('disconnect')
+ * eyetribe('disconnect');
  */
-
 void disconnect(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     try {
@@ -85,6 +84,100 @@ void disconnect(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
     
     mexUnlock();
+}
+
+
+/**
+ * connected = eyetribe('is_connected');
+ */
+void is_connected(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    if(gaze_api->is_connected()) {
+        // Return 1
+    } else {
+        // Return 0
+    }
+}
+
+
+/**
+ * eyetribe('set_screen', struct(...));
+ *
+ */
+void set_screen(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    // prhs[0] -> screen
+    // gaze_api->set_screen(screen);
+}
+
+
+/**
+ * screen = eyetribe('get_screen');
+ */
+void get_screen(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+
+/**
+ * frame = eyetribe('get_frame');
+ */
+void get_frame(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+
+/**
+ * calibresult = eyetribe('get_calib_result');
+ */
+void get_calib_result(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+/**
+ * serverstate = eyetribe('get_server_state');
+ */
+void get_server_state(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+
+/**
+ * status = eyetribe('calibration_start', npoints);
+ */
+void calibration_start(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+
+/**
+ * eyetribe('calibration_clear');
+ */
+void calibration_clear(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+
+/**
+ * eyetribe('calibration_abort');
+ */
+void calibration_abort(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+
+/**
+ * eyetribe('calibration_point_start', x, y);
+ */
+void calibration_point_start(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+}
+
+/**
+ * eyetribe('calibration_point_end');
+ */
+void calibration_point_end(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
 }
 
 
