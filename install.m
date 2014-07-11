@@ -43,7 +43,7 @@ if ~exist(gaze_lib, 'file')
         error(cmdout);
     end
 
-    cd('../..');
+    cd '../..';
 end
 
 % Verify that the client library was compiled
@@ -52,8 +52,14 @@ if ~exist(gaze_lib, 'file')
 end
 
 % Compile our MEX file
-cd('src');
+source = {'src/eyetribe.cpp', ...
+          'src/utility.cpp'};
+include = {'-Ivendor/tet-cpp-client-master/include/'};
+linker = {['-L' build_dir], '-lGazeApiLib', '-lc++', ...
+          '-lboost_thread-mt', '-lboost_system-mt'};
+cxxflags = 'CXXFLAGS="-std=c++11"'; % -stdlib=libc++"';
 
+mex(cxxflags, include{:}, linker{:}, '-v', source{:});
 
-
-cd('..');
+% All done...
+disp(' ')
