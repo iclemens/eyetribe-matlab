@@ -1,3 +1,4 @@
+
 cmake_exec = '/usr/local/bin/cmake';
 
 % Create directory for TET client
@@ -19,16 +20,40 @@ if ~exist('vendor/tet-cpp-client-master', 'dir')
 end
 
 % Building C++ client
-build_dir = 'vendor/tet-cpp-build';
-if ~exist(build_dir, 'dir'), mkdir('vendor/tet-cpp-build'); end;
-cd(build_dir);
+gaze_lib = 'vendor/tet-cpp-build/libGazeApiLib.a';
 
-disp 'Compiling C++ client';
-[status, cmdout] = system([cmake_exec ' ../tet-cpp-client-master']);
+if ~exist(gaze_lib, 'file')
+    build_dir = 'vendor/tet-cpp-build';
+    if ~exist(build_dir, 'dir'), mkdir('vendor/tet-cpp-build'); end;
+    cd(build_dir);
 
-if(status ~= 0) 
+    disp 'Compiling C++ client (cmake)';
+    [status, cmdout] = system([cmake_exec ' ../tet-cpp-client-master']);
+
+    if status ~= 0 
+        cd '../..';
+        error(cmdout);
+    end
+
+    disp 'Compiling C++ client (make)';
+    [status, cmdout] = system('make');
+
+    if status ~= 0
+        cd '../..';
+        error(cmdout);
+    end
+
     cd('../..');
-    error(cmdout);
 end
 
-cd('../..');
+% Verify that the client library was compiled
+if ~exist(gaze_lib, 'file')
+    error(['The C++ client library could not be located at: ' gaze_lib]);
+end
+
+% Compile our MEX file
+cd('src');
+
+
+
+cd('..');
