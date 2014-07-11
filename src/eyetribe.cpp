@@ -93,8 +93,8 @@ void disconnect(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  */
 void is_connected(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    CHECK_NARGS(nrhs != 1, "Function is_connected exactly requires 0 input arguments");
-    CHECK_NARGS(nlhs > 1, "Function is_connected exactly requires 1 output argument");
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 1, "Function is_connected requires exactly 1 output argument");
     
     if(!gaze_api) {
         plhs[0] = muCreateDouble(0);
@@ -111,8 +111,12 @@ void is_connected(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  */
 void set_screen(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    // prhs[0] -> screen
-    // gaze_api->set_screen(screen);
+    CHECK_NARGS(nrhs != 2, "Function is_connected requires exactly 1 input arguments");
+    CHECK_NARGS(nlhs > 0, "Function is_connected requires exactly 0 output arguments");
+        
+    gtl::Screen screen;
+    muGetScreen(prhs[1], screen);
+    gaze_api->get_screen(screen);
 }
 
 
@@ -121,6 +125,12 @@ void set_screen(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  */
 void get_screen(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 1, "Function is_connected requires exactly 1 output argument");
+        
+    gtl::Screen screen;
+    gaze_api->get_screen(screen);
+    plhs[0] = muCreateScreen(screen);   
 }
 
 
@@ -129,6 +139,12 @@ void get_screen(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  */
 void get_frame(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 1, "Function is_connected requires exactly 1 output argument");
+        
+    gtl::GazeData gazeData;
+    gaze_api->get_frame(gazeData);
+    plhs[0] = muCreateGazeData(gazeData);    
 }
 
 
@@ -137,13 +153,26 @@ void get_frame(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  */
 void get_calib_result(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 1, "Function is_connected requires exactly 1 output argument");
+        
+    gtl::CalibResult calibresult;
+    gaze_api->get_calib_result(calibresult);
+    plhs[0] = muCreateCalibresult(calibresult);      
 }
+
 
 /**
  * serverstate = eyetribe('get_server_state');
  */
 void get_server_state(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 1, "Function is_connected requires exactly 1 output argument");
+
+    gtl::ServerState serverState;
+    serverState = gaze_api->get_server_state();
+    plhs[0] = muCreateServerstate(serverState);    
 }
 
 
@@ -152,6 +181,11 @@ void get_server_state(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
  */
 void calibration_start(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 2, "Function is_connected requires exactly 1 input arguments");
+    CHECK_NARGS(nlhs > 1, "Function is_connected requires exactly 1 output argument");
+
+    int status = gaze_api->calibration_start(*mxGetPr(prhs[1]));
+    *mxGetPr(plhs[0]) = status;
 }
 
 
@@ -160,6 +194,10 @@ void calibration_start(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[
  */
 void calibration_clear(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 0, "Function is_connected requires exactly 0 output argument");
+    
+    gaze_api->calibration_clear();
 }
 
 
@@ -168,6 +206,10 @@ void calibration_clear(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[
  */
 void calibration_abort(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 0, "Function is_connected requires exactly 0 output argument");
+    
+    gaze_api->calibration_abort();  
 }
 
 
@@ -176,6 +218,10 @@ void calibration_abort(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[
  */
 void calibration_point_start(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 3, "Function is_connected requires exactly 2 input arguments");
+    CHECK_NARGS(nlhs > 0, "Function is_connected requires exactly 0 output argument");
+    
+    gaze_api->calibration_point_start(*mxGetPr(prhs[1]), *mxGetPr(prhs[2]));        
 }
 
 /**
@@ -183,6 +229,10 @@ void calibration_point_start(int nlhs, mxArray *plhs[], int nrhs, const mxArray 
  */
 void calibration_point_end(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
+    CHECK_NARGS(nrhs != 1, "Function is_connected requires exactly 0 input arguments");
+    CHECK_NARGS(nlhs > 0, "Function is_connected requires exactly 0 output argument");
+    
+    gaze_api->calibration_point_end();    
 }
 
 
