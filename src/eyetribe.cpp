@@ -181,6 +181,31 @@ void calibration_point_end(int nlhs, mxArray *plhs[], int nrhs, const mxArray *p
 }
 
 
+/** 
+ * List of commands 
+ */
+struct {
+    int need_lock;
+    const char *command;
+    void(*func)(int, mxArray**, int, const mxArray**);
+} commands[] = {
+    {0, "connect",      connect},
+    {1, "disconnect",   disconnect},
+    {1, "is_connected", is_connected},
+    {1, "set_screen",   set_screen},
+    {1, "get_screen",   get_screen},
+    {1, "get_frame",    get_frame},
+    {1, "get_calib_result",  get_calib_result},
+    {1, "get_server_state",  get_server_state},
+    {1, "calibration_start", calibration_start},
+    {1, "calibration_clear", calibration_clear},
+    {1, "calibration_abort", calibration_abort},
+    {1, "calibration_point_start", calibration_point_start},
+    {1, "calibration_point_end",   calibration_point_end},
+    {NULL, NULL}
+    };
+
+
 /**
  * eyetribe('command', arg1, ..., argn)
  */
@@ -198,21 +223,28 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         return;
     }
     
-    if(mexIsLocked() == 0) {
-        if(strncmp(function, "connect", 7) == 0) {
-            connect(nlhs, plhs, nrhs, prhs);
-        } else {    
-            mexWarnMsgIdAndTxt("EyeTribe:notConnected", "The EyeTribe is not connected.");
-        }
-    } else {
-        if(strncmp(function, "get_frame", 9) == 0) {
-            //etGetFrame(nlhs, plhs, nrhs, prhs);
-        } else if(strncmp(function, "disconnect", 10) == 0) {
-            disconnect(nlhs, plhs, nrhs, prhs);
-        } else {
-            mexWarnMsgIdAndTxt("EyeTribe:invallidCommand", "Invalid command");
-        }
-    }
-    
+    // Find command to execute
+    int i = 0;
+    while(commands[i].command != NULL) {
+        if(strcmp(function, commands[i].command) == 0)
+            break;
+    }    
     mxFree(function);
+    
+    // If a command was found, run it
+    if(commands[i].command != NULL) {
+        // Check lock status
+        if(commands[i].need_lock && !mexIsLocked()) {
+            mexWarnMsgIdAndTxt("EyeTribe:notConnected", "Please connect EyeTribe before calling this function.");
+            return;
+        }
+        
+        if(~commands[i].need_lock && mexIsLocked()) {
+            mexWarnMsgIdAndTxt("EyeTribe:connected", "Please disconnect EyeTribe before calling this function.");
+            return;
+        }
+
+        // Invoke function
+        commands[i].func(nlhs, plhs, nrhs, prhs);
+    }
 }
