@@ -1,37 +1,47 @@
-diff -Naur ./include/gazeapi.h ../original/include/gazeapi.h
---- ./include/gazeapi.h	2014-04-24 15:42:50.000000000 +0100
-+++ ../original/include/gazeapi.h	2014-07-11 17:54:27.000000000 +0100
+diff -Naur tet-cpp-client-master/include/gazeapi.h tet-cpp-modified/include/gazeapi.h
+--- tet-cpp-client-master/include/gazeapi.h	2014-04-24 15:42:50.000000000 +0100
++++ tet-cpp-modified/include/gazeapi.h	2014-07-11 18:42:38.000000000 +0100
 @@ -101,7 +101,7 @@
           * \param[in] port port number to connect to server on.
           * \return bool True if connected, false if connection failed.
           */
 -        bool connect(bool push_mode, unsigned short port);
-+        bool connect(bool push_mode, std::string server, unsigned short port);
++        bool connect(bool push_mode, const char *server, unsigned short port);
  
          /** Disconnect from server. */
          void disconnect();
-diff -Naur ./src/gazeapi.cpp ../original/src/gazeapi.cpp
---- ./src/gazeapi.cpp	2014-04-24 15:42:50.000000000 +0100
-+++ ../original/src/gazeapi.cpp	2014-07-11 17:55:34.000000000 +0100
-@@ -178,7 +178,7 @@
+diff -Naur tet-cpp-client-master/src/gazeapi.cpp tet-cpp-modified/src/gazeapi.cpp
+--- tet-cpp-client-master/src/gazeapi.cpp	2014-04-24 15:42:50.000000000 +0100
++++ tet-cpp-modified/src/gazeapi.cpp	2014-07-11 18:45:09.000000000 +0100
+@@ -178,16 +178,17 @@
          }
  
          // GazeApi support
 -        bool connect(bool push_mode, std::string const & port)
-+        bool connect(bool push_mode, std::string const & server, std::string const & port)
++        bool connect(bool push_mode, std::string server, std::string const & port)
          {
              if (AS_STOPPED != m_state)
              {
-@@ -187,7 +187,7 @@
+                 return false;
+             }
  
++            m_server = server;
              m_port = port;
  
 -            bool const success = m_socket.connect("127.0.0.1", m_port);
-+            bool const success = m_socket.connect(server.c_str(), m_port);
++            bool const success = m_socket.connect(m_server, m_port);
  
              if (success)
              {
-@@ -745,14 +745,14 @@
+@@ -677,6 +678,7 @@
+         Socket                  m_socket;
+         ApiState                m_state;
+         CalibrationProxy        m_calibration_proxy;
++        std::string             m_server;
+         std::string             m_port;
+ 
+         ServerState             m_server_proxy;
+@@ -745,14 +747,14 @@
  
      bool GazeApi::connect(bool push_mode)
      {
@@ -40,7 +50,7 @@ diff -Naur ./src/gazeapi.cpp ../original/src/gazeapi.cpp
      }
  
 -    bool GazeApi::connect(bool push_mode, unsigned short port)
-+    bool GazeApi::connect(bool push_mode, std::string server, unsigned short port)
++    bool GazeApi::connect(bool push_mode, const char * server, unsigned short port)
      {
          std::stringstream ss;
          ss << port;

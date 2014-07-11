@@ -17,11 +17,11 @@ end
 if ~exist('vendor/tet-cpp-client-master', 'dir')
     disp 'Unpacking C++ client';
     unzip(target, 'vendor');
-end
 
-cd 'vendor/tet-cpp-client-master';
-system 'patch -p1 < ../../tribe.patch';
-cd '../..';
+    cd 'vendor/tet-cpp-client-master';
+    system 'patch -p1 < ../../tribe.patch';
+    cd '../..';
+end
 
 % Building C++ client
 gaze_lib = 'vendor/tet-cpp-build/libGazeApiLib.a';
@@ -56,15 +56,11 @@ if ~exist(gaze_lib, 'file')
 end
 
 % Compile our MEX file
-source = {'src/eyetribe.cpp', ...
-          'src/utility.cpp', ...
-          'src/datatypes.cpp'};
-include = {'-Ivendor/tet-cpp-client-master/include/'};
-linker = {['-L' build_dir], '-lGazeApiLib', '-lc++', ...
-          '-lboost_thread-mt', '-lboost_system-mt'};
-cxxflags = 'CXXFLAGS="-std=c++11"'; % -stdlib=libc++"';
-
-mex(cxxflags, include{:}, linker{:}, '-v', source{:});
+mex CXXFLAGS='-std=c++11 -stdlib=libc++' ...
+    -Ivendor/tet-cpp-client-master/include ...
+    -Lvendor/tet-cpp-build ...
+    -lGazeApiLib -lc++ -lboost_thread-mt -lboost_system-mt ...
+    -v -cxx src/eyetribe.cpp src/utility.cpp src/datatypes.cpp
 
 % All done...
 disp(' ')
