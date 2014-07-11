@@ -46,4 +46,4 @@ int arrayToInteger(const mxArray *array, int* out)
     *out = atoi(string);
     mxFree(string);
     return 0;
-}
+}  

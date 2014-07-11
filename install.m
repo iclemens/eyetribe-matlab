@@ -21,9 +21,9 @@ end
 
 % Building C++ client
 gaze_lib = 'vendor/tet-cpp-build/libGazeApiLib.a';
+build_dir = 'vendor/tet-cpp-build';
 
 if ~exist(gaze_lib, 'file')
-    build_dir = 'vendor/tet-cpp-build';
     if ~exist(build_dir, 'dir'), mkdir('vendor/tet-cpp-build'); end;
     cd(build_dir);
 
@@ -53,7 +53,8 @@ end
 
 % Compile our MEX file
 source = {'src/eyetribe.cpp', ...
-          'src/utility.cpp'};
+          'src/utility.cpp', ...
+          'src/datatypes.cpp'};
 include = {'-Ivendor/tet-cpp-client-master/include/'};
 linker = {['-L' build_dir], '-lGazeApiLib', '-lc++', ...
           '-lboost_thread-mt', '-lboost_system-mt'};

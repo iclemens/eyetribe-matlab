@@ -1,6 +1,7 @@
 #include "mex.h"
 #include "gazeapi.h"
 #include "utility.h"
+#include "datatypes.h"
 
 
 /**
@@ -92,11 +93,15 @@ void disconnect(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  */
 void is_connected(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    if(gaze_api->is_connected()) {
-        // Return 1
-    } else {
-        // Return 0
+    CHECK_NARGS(nrhs != 1, "Function is_connected exactly requires 0 input arguments");
+    CHECK_NARGS(nlhs > 1, "Function is_connected exactly requires 1 output argument");
+    
+    if(!gaze_api) {
+        plhs[0] = muCreateDouble(0);
+        return;
     }
+
+    plhs[0] = muCreateDouble(gaze_api->is_connected()?1:0);
 }
 
 
@@ -191,7 +196,7 @@ struct {
 } commands[] = {
     {0, "connect",      connect},
     {1, "disconnect",   disconnect},
-    {1, "is_connected", is_connected},
+    {0, "is_connected", is_connected},
     {1, "set_screen",   set_screen},
     {1, "get_screen",   get_screen},
     {1, "get_frame",    get_frame},
@@ -202,7 +207,7 @@ struct {
     {1, "calibration_abort", calibration_abort},
     {1, "calibration_point_start", calibration_point_start},
     {1, "calibration_point_end",   calibration_point_end},
-    {NULL, NULL}
+    {0, NULL, NULL}
     };
 
 
@@ -228,19 +233,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     while(commands[i].command != NULL) {
         if(strcmp(function, commands[i].command) == 0)
             break;
+        i++;
     }    
     mxFree(function);
-    
+        
     // If a command was found, run it
     if(commands[i].command != NULL) {
         // Check lock status
         if(commands[i].need_lock && !mexIsLocked()) {
             mexWarnMsgIdAndTxt("EyeTribe:notConnected", "Please connect EyeTribe before calling this function.");
-            return;
-        }
-        
-        if(~commands[i].need_lock && mexIsLocked()) {
-            mexWarnMsgIdAndTxt("EyeTribe:connected", "Please disconnect EyeTribe before calling this function.");
             return;
         }
 
